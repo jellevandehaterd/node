@@ -1,0 +1,13 @@
+gulp:
+  image: alpine:3.4
+  user: "{{ node_user }}"
+  command: /bin/false
+  dev_overrides:
+    working_dir: "{{ node_home }}"
+    command: ['/usr/bin/dumb-init', '{{ node_root }}/node_modules/.bin/gulp']
+    ports:
+      - "8000:{{ gulp_dev_port }}"
+    volumes:
+      - "$PWD:{{ node_home }}"
+    links:
+      - django
