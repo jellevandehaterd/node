@@ -1,0 +1,29 @@
+---
+
+# For preventing pid 1 issues it is advisble to use dumb-init in docker
+- name: Install dumb init
+  get_url:
+    dest: "{{ install_dumb_init.location }}/dumb-init"
+    url: "https://github.com/Yelp/dumb-init/releases/download/v{{ install_dumb_init.version }}/dumb-init_{{ install_dumb_init.version }}_amd64"
+    mode: 0775
+    validate_certs: no
+    checksum: "{{ install_dumb_init.checksum }}"
+  when: ansible_connection == 'docker' or ansible_env.ANSIBLE_CONTAINER is defined
+
+- name: Install node runtime
+  command: apk --virtual node_runtime --no-cache add {{ item }}
+  args:
+    creates: /usr/bin/node
+  with_items:
+    - "{{ node_runtime }}"
+
+- name: Create node group
+  command: "addgroup {{ node_group }}"
+  register: add_group
+  failed_when: "add_group.rc > 1"
+  changed_when: "add_group.rc == 0"
+
+- name: Create node user
+  command: "adduser {{ node_user }} -h {{ node_home }} -G {{ node_group }} -D -s /bin/false"
+  failed_when: "add_group.rc > 1"
+  changed_when: "add_group.rc == 0"

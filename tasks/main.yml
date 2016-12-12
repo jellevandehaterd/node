@@ -1,0 +1,44 @@
+---
+# tasks file for jellevandehaterd.node
+
+# Variable setup.
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Define node runtime.
+  set_fact:
+    node_runtime: "{{ __node_runtime }}"
+  when: node_runtime is not defined
+
+# Setup/install tasks.
+- include: setup-Alpine.yml
+  when: ansible_os_family == 'Alpine'
+
+- name: Create node_modules directory
+  file:
+    path: "{{ node_root }}/node_modules"
+    state: directory
+    owner: "{{ node_user }}"
+    group: "{{ node_group }}"
+
+- name: Copy source
+  become_user: "{{ node_user }}"
+  copy:
+    src: "{{ node_local_root }}/"
+    dest: "{{ node_home }}"
+    owner: "{{ node_user }}"
+    group: "{{ node_group }}"
+
+- name: "Symlink package.json to {{ node_home }}"
+  file:
+    src: "{{ node_home }}/package.json"
+    dest: "{{ node_root }}/package.json"
+    state: link
+    owner: "{{ node_user }}"
+    group: "{{ node_group }}"
+
+- name: Install node deps
+  become_user: "{{ node_user }}"
+  npm:
+    path: "{{ node_root }}"
+    state: present

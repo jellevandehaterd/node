@@ -1,0 +1,9 @@
+---
+# defaults file for jellevandehaterd.node
+
+node_user: node
+node_group: node
+node_home: /opt/node
+node_root: /opt
+node_local_root: "{{ lookup('pipe','dirname `pwd`') }}/"
+node_package_json_location: "{{ node_root }}/package.json"

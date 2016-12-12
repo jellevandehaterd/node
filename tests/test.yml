@@ -1,0 +1,8 @@
+---
+- hosts: all
+  vars:
+    node_local_root: "{{ lookup('pipe','dirname `pwd`') }}/tests"
+  roles:
+    - role_under_test
+  environment:
+    ANSIBLE_CONTAINER: yes
