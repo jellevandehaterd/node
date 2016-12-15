@@ -42,3 +42,4 @@
   npm:
     path: "{{ node_root }}"
     state: present
+  failed_when: False
