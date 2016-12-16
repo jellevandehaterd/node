@@ -1,7 +1,7 @@
 ---
 
 __node_runtime:
-  - nodejs-lts
+  - nodejs
 
 install_dumb_init:
   location: /usr/local/bin
